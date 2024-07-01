@@ -7,16 +7,8 @@
             v-for="col in 11"
             :key="'header-col-' + (col + 1)"
             class="text-center p-4 pb-0"
-          >
-            {{ col + 1 }}
-          </th>
-          <th>
-            <UIcon
-              name="i-heroicons-lock-closed"
-              size="xs"
-              class="block text-center p-4 pb-0"
-            />
-          </th>
+          ></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -25,16 +17,19 @@
           :key="'row-' + row"
           :class="
             row === 1
-              ? 'bg-red-100'
+              ? 'bg-red-100 border-red-500'
               : row === 2
-              ? 'bg-yellow-100'
+              ? 'bg-yellow-100 border-yellow-500'
               : row === 3
-              ? 'bg-green-100'
-              : 'bg-blue-100'
+              ? 'bg-green-100 border-green-500'
+              : 'bg-blue-100 border-blue-500'
           "
+          class="border-[1px]"
         >
           <td v-for="col in 12" :key="'col-' + col">
-            <div class="w-4 h-4 p-4 flex items-center">
+            <div
+              class="w-4 h-4 p-4 flex items-center relative bg-white rounded-full"
+            >
               <UCheckbox
                 v-model="checkboxStates[rowIndex][col - 1]"
                 :color="
@@ -46,7 +41,49 @@
                     ? 'green'
                     : 'blue'
                 "
+                :disabled="
+                  col === 12
+                    ? checkboxStates[rowIndex]
+                        .slice(0, 11)
+                        .filter((state) => state).length < 5
+                    : checkboxStates[rowIndex][11]
+                "
+                class="absolute w-4 h-4 left-2 top-1.5 scale-125 opacity-0"
+                :class="{
+                  'opacity-100': checkboxStates[rowIndex][col - 1],
+                }"
               />
+              <div
+                class="font-bold text-center"
+                :class="
+                  row === 1
+                    ? 'text-red-500'
+                    : row === 2
+                    ? 'text-yellow-500'
+                    : row === 3
+                    ? 'text-green-500'
+                    : 'text-blue-500'
+                "
+              >
+                <div
+                  v-if="col !== 12"
+                  class="absolute left-2.5 top-1 text-center mx-auto block z-10 pointer-events-none"
+                  :class="{
+                    'opacity-0': checkboxStates[rowIndex][col - 1],
+                  }"
+                >
+                  {{ rowIndex < 2 ? col + 1 : 13 - col }}
+                </div>
+                <UIcon
+                  v-if="col === 12"
+                  name="i-heroicons-lock-closed"
+                  size="xs"
+                  class="absolute left-2 top-2 text-center mx-auto block z-20 pointer-events-none"
+                  :class="{
+                    'opacity-0': checkboxStates[rowIndex][col - 1],
+                  }"
+                />
+              </div>
             </div>
           </td>
         </tr>
@@ -69,32 +106,47 @@
       </tbody>
     </table>
 
-    <div class="flex gap-4 mt-8">
-      <div class="bg-red-500 w-10 h-10 grid place-items-center">
+    <div
+      class="flex gap-4 mt-8"
+      :class="{
+        'blur-sm': !showScores,
+      }"
+    >
+      <div
+        class="bg-red-500 w-10 h-10 grid place-items-center rounded-lg"
+      >
         <p class="text-white">{{ scoreForFirstRow ?? 0 }}</p>
       </div>
 
       <div>+</div>
 
-      <div class="bg-yellow-500 w-10 h-10 grid place-items-center">
+      <div
+        class="bg-yellow-500 w-10 h-10 grid place-items-center rounded-lg"
+      >
         <p class="text-white">{{ scoreForSecondRow ?? 0 }}</p>
       </div>
 
       <div>+</div>
 
-      <div class="bg-green-500 w-10 h-10 grid place-items-center">
+      <div
+        class="bg-green-500 w-10 h-10 grid place-items-center rounded-lg"
+      >
         <p class="text-white">{{ scoreForThirdRow ?? 0 }}</p>
       </div>
 
       <div>+</div>
 
-      <div class="bg-blue-500 w-10 h-10 grid place-items-center">
+      <div
+        class="bg-blue-500 w-10 h-10 grid place-items-center rounded-lg"
+      >
         <p class="text-white">{{ scoreForFourthRow ?? 0 }}</p>
       </div>
 
       <div>-</div>
 
-      <div class="bg-gray-500 w-10 h-10 grid place-items-center">
+      <div
+        class="bg-gray-500 w-10 h-10 grid place-items-center rounded-lg"
+      >
         <p class="text-white">{{ deductedScore }}</p>
       </div>
 
@@ -105,6 +157,15 @@
       >
         <p class="text-gray-900">{{ totalScore }}</p>
       </div>
+    </div>
+
+    <div class="mt-4 mb-12">
+      <h2>Toon scores</h2>
+      <UToggle v-model="showScores" />
+    </div>
+
+    <div>
+      <UButton @click="resetGame">Reset game</UButton>
     </div>
   </div>
 </template>
@@ -176,4 +237,27 @@ const totalScore = computed(() => {
     (deductedScore.value || 0)
   );
 });
+
+const showScores = ref(false);
+
+const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+  event.preventDefault();
+  event.returnValue = '';
+};
+
+// onMounted(() => {
+//   window.addEventListener('beforeunload', handleBeforeUnload);
+// });
+
+// onUnmounted(() => {
+//   window.removeEventListener('beforeunload', handleBeforeUnload);
+// });
+
+const resetGame = () => {
+  checkboxStates.value = Array(4)
+    .fill(null)
+    .map(() => Array(12).fill(false));
+  grayCheckboxStates.value = Array(4).fill(false);
+  showScores.value = false;
+};
 </script>
