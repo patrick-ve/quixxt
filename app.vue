@@ -31,6 +31,7 @@
               class="w-4 h-4 p-4 flex items-center relative bg-white rounded-full"
             >
               <UCheckbox
+                @change="onSaveGameState"
                 v-model="checkboxStates[rowIndex][col - 1]"
                 :color="
                   row === 1
@@ -81,6 +82,10 @@
                   class="absolute left-2 top-2 text-center mx-auto block z-20 pointer-events-none"
                   :class="{
                     'opacity-0': checkboxStates[rowIndex][col - 1],
+                    'opacity-20':
+                      checkboxStates[rowIndex]
+                        .slice(0, 11)
+                        .filter((state) => state).length < 5,
                   }"
                 />
               </div>
@@ -245,19 +250,39 @@ const handleBeforeUnload = (event: BeforeUnloadEvent) => {
   event.returnValue = '';
 };
 
-// onMounted(() => {
-//   window.addEventListener('beforeunload', handleBeforeUnload);
-// });
-
-// onUnmounted(() => {
-//   window.removeEventListener('beforeunload', handleBeforeUnload);
-// });
-
 const resetGame = () => {
   checkboxStates.value = Array(4)
     .fill(null)
     .map(() => Array(12).fill(false));
   grayCheckboxStates.value = Array(4).fill(false);
   showScores.value = false;
+
+  localStorage.removeItem('checkboxStates');
+  localStorage.removeItem('grayCheckboxStates');
 };
+
+function onSaveGameState() {
+  localStorage.setItem(
+    'checkboxStates',
+    JSON.stringify(checkboxStates.value)
+  );
+  localStorage.setItem(
+    'grayCheckboxStates',
+    JSON.stringify(grayCheckboxStates.value)
+  );
+}
+
+onMounted(() => {
+  const savedCheckboxStates = localStorage.getItem('checkboxStates');
+  if (savedCheckboxStates) {
+    checkboxStates.value = JSON.parse(savedCheckboxStates);
+  }
+
+  const savedGrayCheckboxStates = localStorage.getItem(
+    'grayCheckboxStates'
+  );
+  if (savedGrayCheckboxStates) {
+    grayCheckboxStates.value = JSON.parse(savedGrayCheckboxStates);
+  }
+});
 </script>
