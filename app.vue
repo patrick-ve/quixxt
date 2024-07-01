@@ -1,6 +1,23 @@
 <template>
-  <div class="p-4 bg-gray-100">
-    <table class="mb-8">
+  <div class="p-4 bg-gray-100 max-w-screen">
+    <div class="flex items-center justify-between w-[25rem] mb-4">
+      <UToggle
+        on-icon="i-heroicons-eye"
+        off-icon="i-heroicons-eye-slash"
+        :model-value="showScores"
+        @change="showScores = !showScores"
+      />
+
+      <UButton
+        @click="resetGame"
+        label="Restart game"
+        icon="i-heroicons-arrow-path"
+        size="2xs"
+        color="red"
+      />
+    </div>
+
+    <table class="mb-4 w-[25rem]">
       <thead>
         <tr>
           <th
@@ -95,12 +112,12 @@
       </tbody>
     </table>
 
-    <h2 class="pl-2">Elke mislukte worp -5</h2>
+    <h2 class="font-semibold">Elke mislukte worp -5</h2>
     <table>
       <tbody>
         <tr>
           <td v-for="n in 4" :key="'checkbox-' + n">
-            <div class="block text-center p-2 pb-0">
+            <div class="block text-center p-2 pb-0 scale-125">
               <UCheckbox
                 @change="onSaveGameState"
                 color="gray"
@@ -113,65 +130,64 @@
     </table>
 
     <div
-      class="flex gap-4 mt-8"
+      class="flex items-center gap-4 mt-4 w-[25rem]"
       :class="{
         'blur-sm': !showScores,
       }"
     >
       <div
-        class="bg-red-500 w-10 h-10 grid place-items-center rounded-lg"
+        class="border-red-500 bg-white border-4 w-10 h-10 grid place-items-center rounded-lg"
       >
-        <p class="text-white">{{ scoreForFirstRow ?? 0 }}</p>
+        <p class="text-red-500 font-bold">
+          {{ scoreForFirstRow ?? 0 }}
+        </p>
       </div>
 
       <div>+</div>
 
       <div
-        class="bg-yellow-500 w-10 h-10 grid place-items-center rounded-lg"
+        class="border-yellow-500 bg-white border-4 w-10 h-10 grid place-items-center rounded-lg"
       >
-        <p class="text-white">{{ scoreForSecondRow ?? 0 }}</p>
+        <p class="text-yellow-500 font-bold">
+          {{ scoreForSecondRow ?? 0 }}
+        </p>
       </div>
 
       <div>+</div>
 
       <div
-        class="bg-green-500 w-10 h-10 grid place-items-center rounded-lg"
+        class="border-green-500 bg-white border-4 w-10 h-10 grid place-items-center rounded-lg"
       >
-        <p class="text-white">{{ scoreForThirdRow ?? 0 }}</p>
+        <p class="text-green-500 font-bold">
+          {{ scoreForThirdRow ?? 0 }}
+        </p>
       </div>
 
       <div>+</div>
 
       <div
-        class="bg-blue-500 w-10 h-10 grid place-items-center rounded-lg"
+        class="border-blue-500 bg-white border-4 w-10 h-10 grid place-items-center rounded-lg"
       >
-        <p class="text-white">{{ scoreForFourthRow ?? 0 }}</p>
+        <p class="text-blue-500 font-bold">
+          {{ scoreForFourthRow ?? 0 }}
+        </p>
       </div>
 
       <div>-</div>
 
       <div
-        class="bg-gray-500 w-10 h-10 grid place-items-center rounded-lg"
+        class="border-gray-500 bg-white border-4 w-10 h-10 grid place-items-center rounded-lg"
       >
-        <p class="text-white">{{ deductedScore }}</p>
+        <p class="text-gray-500 font-bold">{{ deductedScore }}</p>
       </div>
 
       <div>=</div>
 
       <div
-        class="bg-white border-2 border-gray-900 w-10 h-10 grid place-items-center"
+        class="bg-white border-4 border-gray-900 w-10 h-10 grid place-items-center rounded-lg"
       >
-        <p class="text-gray-900">{{ totalScore }}</p>
+        <p class="text-gray-900 font-bold">{{ totalScore }}</p>
       </div>
-    </div>
-
-    <div class="mt-4 mb-12">
-      <h2>Toon scores</h2>
-      <UToggle v-model="showScores" />
-    </div>
-
-    <div>
-      <UButton @click="resetGame">Reset game</UButton>
     </div>
   </div>
 </template>
