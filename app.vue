@@ -102,6 +102,7 @@
           <td v-for="n in 4" :key="'checkbox-' + n">
             <div class="block text-center p-2 pb-0">
               <UCheckbox
+                @change="onSaveGameState"
                 color="gray"
                 v-model="grayCheckboxStates[n - 1]"
               />
